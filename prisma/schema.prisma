@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(uuid())
+  nama           String
+  email          String    @unique
+  password_hash  String
+  no_hp          String?
+  role           String    @default("anggota") // 'admin' | 'anggota'
+  bagian_suara   String?   // 'sopran' | 'alto' | 'tenor' | 'bass'
+  angkatan             String?
+  foto_url             String?
+  tempat_tanggal_lahir String?
+  domisili             String?
+  is_active            Boolean   @default(true)
+  created_at           DateTime  @default(now())
+
+  // Relations
+  events_created Event[]         @relation("EventCreator")
+  events_joined  EventMember[]
+  sesi_dibuka    SesiLatihan[]   @relation("SesiOpener")
+  absensi        Absensi[]
+  izin           PengajuanIzin[] @relation("IzinUser")
+  izin_disetujui PengajuanIzin[] @relation("IzinApprover")
+}
+
+model Event {
+  id             String    @id @default(uuid())
+  nama           String
+  deskripsi      String?
+  tanggal_pentas DateTime?
+  lokasi         String?
+  status         String    @default("persiapan") // 'persiapan' | 'aktif' | 'selesai'
+  kategori       String?   // 'Konser' | 'Lomba' | 'Internal' | 'Lainnya'
+  partitur_info  String?   // keterangan partitur event
+  dresscode_info String?   // keterangan dresscode event
+  media_info     String?   // keterangan media & materi event
+  rundown_info   String?   // keterangan rundown acara
+  created_by     String    // Foreign key reference to User
+  created_at     DateTime  @default(now())
+
+  creator        User          @relation("EventCreator", fields: [created_by], references: [id])
+  members        EventMember[]
+  sesi_latihan   SesiLatihan[]
+}
+
+model EventMember {
+  id                 String   @id @default(uuid())
+  event_id           String
+  user_id            String
+  bagian_suara_event String?  // enum equivalent string
+  peran              String   @default("penyanyi") // 'penyanyi' | 'koordinator'
+  joined_at          DateTime @default(now())
+
+  event Event @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([event_id, user_id])
+}
+
+model SesiLatihan {
+  id                  String   @id @default(uuid())
+  event_id            String
+  judul               String
+  waktu_mulai         DateTime
+  waktu_selesai       DateTime
+  lokasi              String?
+  catatan             String?
+  status              String   @default("terjadwal") // 'terjadwal' | 'berlangsung' | 'selesai'
+  durasi_ontime_menit Int      @default(30)
+  kode_absen          String?
+  kode_expired_at     DateTime?
+  dibuka_oleh         String?
+  created_at          DateTime @default(now())
+
+  event  Event     @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  opener User?     @relation("SesiOpener", fields: [dibuka_oleh], references: [id])
+  absensi Absensi[]
+  izin   PengajuanIzin[]
+}
+
+model Absensi {
+  id          String   @id @default(uuid())
+  sesi_id     String
+  user_id     String
+  status      String   // 'hadir' | 'terlambat' | 'izin' | 'alpha'
+  waktu_absen DateTime @default(now())
+  metode      String?  // 'qr' | 'kode_manual' | 'sistem' | 'admin'
+  keterangan  String?
+
+  sesi SesiLatihan @relation(fields: [sesi_id], references: [id], onDelete: Cascade)
+  user User        @relation(fields: [user_id], references: [id])
+
+  @@unique([sesi_id, user_id])
+}
+
+model PengajuanIzin {
+  id             String    @id @default(uuid())
+  sesi_id        String
+  user_id        String
+  alasan         String?
+  status_izin    String    @default("menunggu") // 'menunggu' | 'disetujui' | 'ditolak'
+  disetujui_oleh String?
+  diajukan_at    DateTime  @default(now())
+  diproses_at    DateTime?
+
+  sesi     SesiLatihan @relation(fields: [sesi_id], references: [id], onDelete: Cascade)
+  user     User        @relation("IzinUser", fields: [user_id], references: [id])
+  approver User?       @relation("IzinApprover", fields: [disetujui_oleh], references: [id])
+}
+
+model Partitur {
+  id         String   @id @default(uuid())
+  judul      String
+  tahun      Int?
+  komposer   String?
+  arranger   String?
+  asal_lagu  String?
+  file_url   String?
+  created_at DateTime @default(now())
+}
