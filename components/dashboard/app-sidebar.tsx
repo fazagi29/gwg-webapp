@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -25,11 +25,6 @@ interface AppSidebarProps {
 
 export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
   const pathname = usePathname()
-  const [hasMounted, setHasMounted] = useState(false)
-
-  useEffect(() => {
-    setHasMounted(true)
-  }, [])
 
   const memberRoutes = [
     {
@@ -95,7 +90,7 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
       <div className="p-6 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity" onClick={() => setIsOpen?.(false)}>
           <div className="liquid-button w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
-             <span className="font-bold text-white text-sm">GWG</span>
+            <span className="font-bold text-white text-sm">GWG</span>
           </div>
           <div>
             <h2 className="text-sm font-bold text-white tracking-tight leading-none">
@@ -124,10 +119,10 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
       <div className="flex-1 px-4 mt-6 overflow-y-auto">
         <div className="space-y-1">
           {memberRoutes.filter((route) => route.show).map((route) => {
-            const isActive = hasMounted && (
+            const isActive =
               pathname === route.href ||
               (route.href !== "/dashboard" && route.href !== "/dashboard/anggota" && route.href !== "#" && pathname.startsWith(route.href))
-            )
+
             return (
               <Link
                 key={route.title}
@@ -154,14 +149,17 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
           <div className="mt-8 space-y-1">
             <p className="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2">Admin Panel</p>
             {adminRoutes.map((route) => {
-              const isActive = hasMounted && (pathname === route.href || (route.href !== "/dashboard" && pathname.startsWith(route.href)))
+              const isActive =
+                pathname === route.href ||
+                (route.href !== "/dashboard" && pathname.startsWith(route.href))
+
               return (
                 <Link
                   key={route.title}
                   href={route.href}
                   onClick={() => setIsOpen?.(false)}
                   className={cn(
-                  "liquid-nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative",
+                    "liquid-nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative",
                     isActive
                       ? "text-white bg-[#ffffff0a] font-semibold"
                       : "text-slate-400 hover:text-white font-medium"
