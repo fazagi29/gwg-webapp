@@ -38,7 +38,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   if (!event) return notFound()
 
   const isMember = event.members.some((m) => m.user_id === userId)
-  if (!isAdmin && !isMember) return notFound()
+  const isActiveUkmEvent = event.status === "persiapan" || event.status === "aktif"
+  const canViewTrainingDetail = isAdmin || isMember
+  if (!isAdmin && !isMember && !isActiveUkmEvent) return notFound()
 
   let availableUsers: import('@prisma/client').User[] = []
   if (isAdmin) {
@@ -157,7 +159,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         {/* Left Column */}
-        <div className="lg:col-span-2 space-y-10">
+        <div className={`${canViewTrainingDetail ? "lg:col-span-2" : "lg:col-span-3"} space-y-10`}>
+          {!canViewTrainingDetail && (
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-5 text-sm text-amber-100">
+              Event ini sedang aktif di UKM. Rincian latihan dan presensi hanya tersedia untuk anggota yang terdaftar di event ini.
+            </div>
+          )}
 
           {/* Section cards: Partitur, Dresscode, Media, Rundown */}
           <section>
@@ -218,86 +225,90 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           </section>
 
           {/* Jadwal Sesi Latihan */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold">Jadwal Sesi Latihan</h3>
-              {isAdmin && <CreateSesiDialog eventId={event.id} />}
-            </div>
+          {canViewTrainingDetail && (
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold">Jadwal Sesi Latihan</h3>
+                {isAdmin && <CreateSesiDialog eventId={event.id} />}
+              </div>
 
-            <div className="space-y-4">
-              {event.sesi_latihan.length === 0 ? (
-                <p className="text-slate-500 text-sm border border-dashed border-white/10 p-8 text-center rounded-2xl">
-                  Belum ada sesi latihan terjadwal.
-                </p>
-              ) : (
-                event.sesi_latihan.map((sesi) => {
-                  const isActive = sesi.status === "berlangsung" && sesi.kode_expired_at && new Date(sesi.kode_expired_at) > new Date()
-                  const isPast = sesi.status === "selesai" || (sesi.waktu_selesai && new Date(sesi.waktu_selesai) < new Date())
-                  const userRecord = !isAdmin ? sesi.absensi.find((a) => a.user_id === userId) : null
-                  const userStatus = userRecord ? userRecord.status : null
+              <div className="space-y-4">
+                {event.sesi_latihan.length === 0 ? (
+                  <p className="text-slate-500 text-sm border border-dashed border-white/10 p-8 text-center rounded-2xl">
+                    Belum ada sesi latihan terjadwal.
+                  </p>
+                ) : (
+                  event.sesi_latihan.map((sesi) => {
+                    const isActive = sesi.status === "berlangsung" && sesi.kode_expired_at && new Date(sesi.kode_expired_at) > new Date()
+                    const isPast = sesi.status === "selesai" || (sesi.waktu_selesai && new Date(sesi.waktu_selesai) < new Date())
+                    const userRecord = !isAdmin ? sesi.absensi.find((a) => a.user_id === userId) : null
+                    const userStatus = userRecord ? userRecord.status : null
 
-                  return (
-                    <div key={sesi.id} className={`p-5 rounded-2xl border transition-all ${isActive ? "bg-violet-900/20 border-violet-500/50" : "bg-[#13111a] border-white/5"}`}>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-white font-bold text-lg">{sesi.judul}</h4>
-                        {isActive && <Badge className="bg-violet-600 text-white animate-pulse border-none">Absen Dibuka</Badge>}
-                      </div>
-                      <div className="flex gap-4 text-xs font-semibold text-slate-400 tracking-wider">
-                        <span className="flex items-center"><CalendarDays className="h-3.5 w-3.5 mr-1 text-slate-500" /> {format(new Date(sesi.waktu_mulai), "dd MMM yyyy")}</span>
-                        <span className="flex items-center"><Clock className="h-3.5 w-3.5 mr-1 text-slate-500" /> {format(new Date(sesi.waktu_mulai), "HH:mm")}</span>
-                      </div>
+                    return (
+                      <div key={sesi.id} className={`p-5 rounded-2xl border transition-all ${isActive ? "bg-violet-900/20 border-violet-500/50" : "bg-[#13111a] border-white/5"}`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="text-white font-bold text-lg">{sesi.judul}</h4>
+                          {isActive && <Badge className="bg-violet-600 text-white animate-pulse border-none">Absen Dibuka</Badge>}
+                        </div>
+                        <div className="flex gap-4 text-xs font-semibold text-slate-400 tracking-wider">
+                          <span className="flex items-center"><CalendarDays className="h-3.5 w-3.5 mr-1 text-slate-500" /> {format(new Date(sesi.waktu_mulai), "dd MMM yyyy")}</span>
+                          <span className="flex items-center"><Clock className="h-3.5 w-3.5 mr-1 text-slate-500" /> {format(new Date(sesi.waktu_mulai), "HH:mm")}</span>
+                        </div>
 
-                      {isAdmin && (
-                        <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4">
-                          <div className="text-xs font-bold tracking-widest uppercase text-slate-400">
-                            Kehadiran: <span className="text-violet-400">{sesi.absensi.length}</span> / {event.members.length}
+                        {isAdmin && (
+                          <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4">
+                            <div className="text-xs font-bold tracking-widest uppercase text-slate-400">
+                              Kehadiran: <span className="text-violet-400">{sesi.absensi.length}</span> / {event.members.length}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={`/dashboard/events/${event.id}/sesi/${sesi.id}`}
+                                className="text-xs bg-[#ffffff0a] hover:bg-[#ffffff1a] border border-[#ffffff1a] text-white px-4 py-2 rounded-xl font-bold transition-colors"
+                              >
+                                Kelola Absen
+                              </a>
+                              {!isActive && !isPast && <BukaAbsenButton sesiId={sesi.id} eventId={event.id} />}
+                              {isActive && (
+                                <span className="text-violet-300 font-mono text-sm tracking-widest font-bold bg-violet-950 px-4 py-2 rounded-xl border border-violet-500/30">
+                                  KODE: {sesi.kode_absen}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <a
-                              href={`/dashboard/events/${event.id}/sesi/${sesi.id}`}
-                              className="text-xs bg-[#ffffff0a] hover:bg-[#ffffff1a] border border-[#ffffff1a] text-white px-4 py-2 rounded-xl font-bold transition-colors"
-                            >
-                              Kelola Absen
-                            </a>
-                            {!isActive && !isPast && <BukaAbsenButton sesiId={sesi.id} eventId={event.id} />}
-                            {isActive && (
-                              <span className="text-violet-300 font-mono text-sm tracking-widest font-bold bg-violet-950 px-4 py-2 rounded-xl border border-violet-500/30">
-                                KODE: {sesi.kode_absen}
-                              </span>
-                            )}
+                        )}
+
+                        {!isAdmin && isActive && !userStatus && (
+                          <div className="mt-4 pt-4 border-t border-violet-500/20">
+                            <p className="text-xs font-bold text-violet-300 tracking-wide uppercase mb-3 text-center">Masukkan 4 Digit Kode Presensi</p>
+                            <AbsenInput eventId={event.id} />
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {!isAdmin && isActive && !userStatus && (
-                        <div className="mt-4 pt-4 border-t border-violet-500/20">
-                          <p className="text-xs font-bold text-violet-300 tracking-wide uppercase mb-3 text-center">Masukkan 4 Digit Kode Presensi</p>
-                          <AbsenInput eventId={event.id} />
-                        </div>
-                      )}
-
-                      {!isAdmin && userStatus && (
-                        <div className={`mt-4 pt-4 border-t flex items-center text-xs font-bold uppercase tracking-wider ${userStatus === "terlambat" ? "border-amber-500/20 text-amber-500" : "border-emerald-500/20 text-emerald-500"}`}>
-                          <CheckCircle className="h-4 w-4 mr-2" /> Tercatat: {userStatus}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })
-              )}
-            </div>
-          </section>
+                        {!isAdmin && userStatus && (
+                          <div className={`mt-4 pt-4 border-t flex items-center text-xs font-bold uppercase tracking-wider ${userStatus === "terlambat" ? "border-amber-500/20 text-amber-500" : "border-emerald-500/20 text-emerald-500"}`}>
+                            <CheckCircle className="h-4 w-4 mr-2" /> Tercatat: {userStatus}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Right Sidebar — Daftar Singers */}
-        <div>
-          <SingersPanel
-            eventId={event.id}
-            members={event.members}
-            availableUsers={availableUsers}
-            isAdmin={isAdmin}
-          />
-        </div>
+        {canViewTrainingDetail && (
+          <div>
+            <SingersPanel
+              eventId={event.id}
+              members={event.members}
+              availableUsers={availableUsers}
+              isAdmin={isAdmin}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

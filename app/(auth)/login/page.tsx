@@ -30,7 +30,7 @@ export default function LoginPage() {
         </div>
 
         <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-tr from-white/5 to-transparent pointer-events-none" />
           <LoginForm />
         </div>
       </div>

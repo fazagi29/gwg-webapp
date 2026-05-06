@@ -5,6 +5,7 @@ import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import { Mic, CalendarX, ArrowRight, ArrowLeft } from "lucide-react"
 import { LiveClockHeader } from "./clock-cmp"
+import { PresensiButtonClient } from "./presensi-button-client"
 import Link from "next/link"
 
 export default async function PresensiMemberPage() {
@@ -12,7 +13,7 @@ export default async function PresensiMemberPage() {
   const userId = session?.user?.id as string
   if (session?.user?.role === "admin") return redirect('/dashboard/events')
 
-  // Find user'logs
+  // Find user's logs
   const logs = await prisma.absensi.findMany({
     where: { user_id: userId },
     orderBy: { waktu_absen: 'desc' },
@@ -76,10 +77,10 @@ export default async function PresensiMemberPage() {
                  </div>
               )}
 
-              <button className="flex-1 sm:max-w-[140px] rounded-3xl bg-[#ffffff0a] hover:bg-[#ffffff1a] border border-[#ffffff1a] transition-all flex flex-col items-center justify-center p-6 cursor-pointer">
-                 <CalendarX className="w-5 h-5 mb-2 text-slate-400" />
-                 <span className="font-bold text-slate-300 text-sm">Izin Absen</span>
-              </button>
+              <PresensiButtonClient
+                sesiId={activeSesi?.id}
+                sesiJudul={activeSesi?.judul}
+              />
             </div>
          </div>
 

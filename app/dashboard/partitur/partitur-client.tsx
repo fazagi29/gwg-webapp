@@ -32,7 +32,7 @@ function PartiturForm({ mode, partitur, onClose }: PartiturFormProps) {
   const [error, setError] = useState("")
   const [fileMode, setFileMode] = useState<"url" | "upload">(partitur?.file_url?.startsWith("/partitur/") ? "upload" : "url")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [existingFileName, setExistingFileName] = useState(
+  const [existingFileName] = useState(
     partitur?.file_url?.startsWith("/partitur/") ? partitur.file_url.split("/").pop() : ""
   )
   const [uploadProgress, setUploadProgress] = useState<"idle" | "uploading" | "done" | "error">("idle")
@@ -475,7 +475,7 @@ export function PartiturClient({ partiturList, isAdmin }: PartiturClientProps) {
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Kategori / Asal Lagu</label>
               <select
-                className="bg-[#ffffff0a] border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500 min-w-[150px]"
+                className="bg-[#ffffff0a] border border-[#ffffff1a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500 min-w-37.5"
                 value={validFilterAsalLagu}
                 onChange={e => setFilterAsalLagu(e.target.value)}
               >

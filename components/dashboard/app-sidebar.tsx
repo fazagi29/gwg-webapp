@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -7,10 +8,12 @@ import {
   LayoutDashboard,
   Users,
   CalendarDays,
+  ClipboardList,
   FileSpreadsheet,
   LogOut,
   Music2,
   X,
+  CheckCircle,
 } from "lucide-react"
 
 interface AppSidebarProps {
@@ -21,6 +24,11 @@ interface AppSidebarProps {
 
 export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
   const pathname = usePathname()
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
 
   const memberRoutes = [
     {
@@ -30,10 +38,22 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
       show: true,
     },
     {
-      title: role === "admin" ? "EVENT & JADWAL" : "PRESENSI",
+      title: role === "admin" ? "EVENT & JADWAL" : "EVENT AKTIF",
       icon: CalendarDays,
-      href: role === "admin" ? "/dashboard/events" : "/dashboard/presensi",
+      href: role === "admin" ? "/dashboard/events" : "/dashboard/anggota/events",
       show: true,
+    },
+    {
+      title: "PRESENSI",
+      icon: CheckCircle,
+      href: "/dashboard/presensi",
+      show: role !== "admin",
+    },
+    {
+      title: "ANGGOTA AKTIF",
+      icon: ClipboardList,
+      href: "/dashboard/anggota",
+      show: role !== "admin",
     },
     {
       title: "PARTITUR",
@@ -48,6 +68,12 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
       title: "KELOLA ANGGOTA",
       icon: Users,
       href: "/dashboard/admin/anggota",
+      show: role === "admin",
+    },
+    {
+      title: "APPROVAL IZIN",
+      icon: CheckCircle,
+      href: "/dashboard/admin/izin",
       show: role === "admin",
     },
     {
@@ -82,8 +108,11 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
 
       <div className="flex-1 px-4 mt-6 overflow-y-auto">
         <div className="space-y-1">
-          {memberRoutes.map((route) => {
-            const isActive = pathname === route.href || (route.href !== "/dashboard" && route.href !== "#" && pathname.startsWith(route.href))
+          {memberRoutes.filter((route) => route.show).map((route) => {
+            const isActive = hasMounted && (
+              pathname === route.href ||
+              (route.href !== "/dashboard" && route.href !== "/dashboard/anggota" && route.href !== "#" && pathname.startsWith(route.href))
+            )
             return (
               <Link
                 key={route.title}
@@ -110,7 +139,7 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
           <div className="mt-8 space-y-1">
             <p className="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2">Admin Panel</p>
             {adminRoutes.map((route) => {
-              const isActive = pathname === route.href || (route.href !== "/dashboard" && pathname.startsWith(route.href))
+              const isActive = hasMounted && (pathname === route.href || (route.href !== "/dashboard" && pathname.startsWith(route.href)))
               return (
                 <Link
                   key={route.title}

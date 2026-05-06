@@ -7,6 +7,7 @@ import { EditAnggotaDialog, DeleteAnggotaDialog } from "./edit-delete-dialog"
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 
 import { User } from "@prisma/client"
+import  Image  from "next/image"
 
 export function AnggotaClientTable({ initialUsers }: { initialUsers: User[] }) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null)
@@ -50,7 +51,7 @@ export function AnggotaClientTable({ initialUsers }: { initialUsers: User[] }) {
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden">
-      <Table className="min-w-[800px]">
+      <Table className="min-w-200">
         <TableHeader className="bg-black/20 border-b border-white/5">
           <TableRow className="hover:bg-transparent border-none">
             <TableHead 
@@ -92,10 +93,10 @@ export function AnggotaClientTable({ initialUsers }: { initialUsers: User[] }) {
           {sortedUsers.map((user) => (
             <TableRow key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
               <TableCell className="font-medium text-white flex items-center gap-3 py-4 px-4">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-violet-500 to-blue-500 overflow-hidden p-0.5 shrink-0">
+                <div className="h-10 w-10 rounded-full bg-linear-to-tr from-violet-500 to-blue-500 overflow-hidden p-0.5 shrink-0">
                   <div className="h-full w-full rounded-full bg-slate-900 flex items-center justify-center">
                     {user.foto_url ? (
-                      <img src={user.foto_url} alt={user.nama} className="h-full w-full object-cover rounded-full" />
+                      <Image src={user.foto_url} alt={user.nama} className="h-full w-full object-cover rounded-full" />
                     ) : (
                       <span className="text-xs font-bold">{user.nama.charAt(0).toUpperCase()}</span>
                     )}
