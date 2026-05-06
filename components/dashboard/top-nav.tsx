@@ -17,22 +17,38 @@ interface TopNavProps {
 export function TopNav({ user }: TopNavProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 })
+
+  // Update dropdown position
+  useEffect(() => {
+    if (buttonRef.current && dropdownOpen) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setDropdownPos({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      })
+    }
+  }, [dropdownOpen])
 
   // Tutup dropdown saat klik di luar
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node) && 
+          buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
         setDropdownOpen(false)
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [dropdownOpen])
 
   const initials = user?.name?.charAt(0).toUpperCase() || "?"
 
   return (
-    <header className="liquid-glass h-16 shrink-0 pl-16 pr-4 md:mx-4 md:mt-4 md:px-5 flex items-center justify-between relative z-20 rounded-none md:rounded-2xl border-x-0 border-t-0 md:border">
+    <header className="liquid-glass h-16 shrink-0 pl-16 pr-4 md:mx-4 md:mt-4 md:px-5 flex items-center justify-between relative z-20 rounded-none md:rounded-2xl border-x-0 border-t-0 md:border overflow-visible">
       {/* Left: Mobile menu trigger + Search */}
       <div className="flex items-center gap-4 flex-1">
         {/* Search bar */}
@@ -52,8 +68,9 @@ export function TopNav({ user }: TopNavProps) {
         <div className="h-8 w-px bg-white/10" />
 
         {/* Profile dropdown trigger */}
-        <div ref={dropdownRef} className="relative">
+        <div className="relative">
           <button
+            ref={buttonRef}
             onClick={() => setDropdownOpen(prev => !prev)}
             className="flex items-center gap-3 hover:bg-white/10 px-3 py-1.5 rounded-full transition-colors group"
           >
@@ -77,9 +94,17 @@ export function TopNav({ user }: TopNavProps) {
             <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
           </button>
 
-          {/* Dropdown panel */}
+          {/* Dropdown panel - using fixed positioning */}
           {dropdownOpen && (
-            <div className="liquid-glass absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div 
+              ref={dropdownRef}
+              style={{
+                position: 'fixed',
+                top: `${dropdownPos.top}px`,
+                right: `${dropdownPos.right}px`,
+              }}
+              className="liquid-glass w-64 rounded-2xl z-[9999] animate-in fade-in slide-in-from-top-2 duration-150 border border-white/10 shadow-xl"
+            >
               {/* User info header */}
               <div className="px-5 py-4 border-b border-white/5">
                 <div className="flex items-center gap-3">
