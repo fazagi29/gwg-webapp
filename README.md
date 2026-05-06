@@ -169,14 +169,3 @@ npx prisma migrate status
 - [NextAuth.js Documentation](https://next-auth.js.org/)
 - [Shadcn/ui Components](https://ui.shadcn.com/)
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👥 Contributors
-
-- Your Name/Team
-
-## 📧 Support
-
-For issues, questions, or suggestions, please open an issue on GitHub or contact the development team.
