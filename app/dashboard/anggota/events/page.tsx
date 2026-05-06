@@ -3,18 +3,20 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { Badge } from "@/components/ui/badge"
-import { CalendarDays, MapPin, ArrowRight, Users, ListChecks } from "lucide-react"
+import { CalendarDays, MapPin, ArrowRight, Users, ListChecks, SearchX } from "lucide-react"
 import { format } from "date-fns"
 import { id as localeId } from "date-fns/locale"
 
 type EventCard = Awaited<ReturnType<typeof getEvents>>["joinedEvents"][number]
 
-async function getEvents(userId: string) {
+async function getEvents(userId: string, q: string) {
   const activeStatus = ["persiapan", "aktif"]
+  const searchFilter = q ? { nama: { contains: q } } : {}
 
   const [joinedEvents, ukmEvents] = await Promise.all([
     prisma.event.findMany({
       where: {
+        ...searchFilter,
         status: { in: activeStatus },
         members: { some: { user_id: userId } },
       },
@@ -29,6 +31,7 @@ async function getEvents(userId: string) {
     }),
     prisma.event.findMany({
       where: {
+        ...searchFilter,
         status: { in: activeStatus },
         members: { none: { user_id: userId } },
       },
@@ -149,12 +152,15 @@ function UkmEventCard({ event }: { event: Omit<EventCard, "sesi_latihan"> }) {
   )
 }
 
-export default async function AnggotaEventsPage() {
+export default async function AnggotaEventsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const session = await auth()
   if (session?.user?.role === "admin") redirect("/dashboard/events")
 
+  const params = await searchParams
+  const q = params?.q?.trim() || ""
   const userId = session?.user?.id as string
-  const { joinedEvents, ukmEvents } = await getEvents(userId)
+  const { joinedEvents, ukmEvents } = await getEvents(userId, q)
+  const isSearchEmpty = q && joinedEvents.length === 0 && ukmEvents.length === 0
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 pb-24 text-white animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -164,6 +170,18 @@ export default async function AnggotaEventsPage() {
           Pantau event UKM yang sedang berjalan. Event yang Anda ikuti menampilkan rincian latihan, sedangkan event UKM lain tampil sebagai ringkasan.
         </p>
       </div>
+
+      {isSearchEmpty && (
+        <div role="alert" className="flex items-start gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-amber-100">
+          <SearchX className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
+          <div>
+            <p className="font-bold">Hasil pencarian tidak ditemukan</p>
+            <p className="mt-1 text-sm text-amber-100/75">
+              Tidak ada event aktif yang cocok dengan kata kunci “{q}”.
+            </p>
+          </div>
+        </div>
+      )}
 
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-4">

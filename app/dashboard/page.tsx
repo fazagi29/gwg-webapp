@@ -114,7 +114,7 @@ export default async function DashboardPage() {
   const userName = session?.user?.name || "Pengurus"
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-7xl mx-auto pb-24 font-sans text-white">
+    <div className="liquid-rise space-y-10 max-w-7xl mx-auto pb-24 font-sans text-white">
 
       {/* Header */}
       <div>
@@ -138,11 +138,11 @@ export default async function DashboardPage() {
               <div className="grid grid-cols-2 gap-6">
 
                 {/* Anggota Aktif */}
-                <div className="bg-[#1e0a4f] rounded-[2rem] p-8 relative overflow-hidden border border-violet-500/20 shadow-xl">
+                <div className="liquid-card liquid-tint-violet liquid-glow-violet rounded-[2rem] p-8 relative overflow-hidden">
                   <div className="absolute -top-10 -right-10 text-[#ffffff05] text-[120px] font-black pointer-events-none select-none leading-none">
                     {totalAnggota}
                   </div>
-                  <div className="relative z-10">
+                  <div className="liquid-content">
                     <div className="w-10 h-10 rounded-xl bg-violet-600/30 border border-violet-500/30 flex items-center justify-center mb-4">
                       <Users className="w-5 h-5 text-violet-300" />
                     </div>
@@ -153,11 +153,11 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Event/Agenda Aktif */}
-                <div className="bg-[#0a1f3f] rounded-[2rem] p-8 relative overflow-hidden border border-blue-500/20 shadow-xl">
+                <div className="liquid-card liquid-tint-cyan liquid-glow-cyan rounded-[2rem] p-8 relative overflow-hidden">
                   <div className="absolute -top-10 -right-10 text-[#ffffff05] text-[120px] font-black pointer-events-none select-none leading-none">
                     {activeEvents}
                   </div>
-                  <div className="relative z-10">
+                  <div className="liquid-content">
                     <div className="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-500/30 flex items-center justify-center mb-4">
                       <CalendarDays className="w-5 h-5 text-blue-300" />
                     </div>
@@ -178,7 +178,7 @@ export default async function DashboardPage() {
                 </div>
 
                 {sesiMendatang.length === 0 ? (
-                  <div className="bg-[#171421] border border-dashed border-white/10 rounded-[2rem] p-12 flex items-center justify-center text-slate-500 text-sm">
+                  <div className="liquid-card border-dashed rounded-[2rem] p-12 flex items-center justify-center text-slate-500 text-sm">
                     Belum ada agenda latihan mendatang.
                   </div>
                 ) : (
@@ -197,13 +197,13 @@ export default async function DashboardPage() {
                         <a
                           key={sesi.id}
                           href={`/dashboard/events/${sesi.event_id}`}
-                          className="flex items-center gap-4 p-4 bg-[#0f0f13] border border-[#ffffff0a] hover:border-violet-500/40 rounded-2xl transition-all group"
+                          className="liquid-card liquid-glow-violet flex items-center gap-4 p-4 rounded-2xl transition-all group"
                         >
-                          <div className="w-14 h-14 rounded-xl bg-violet-900/40 border border-violet-500/20 flex flex-col items-center justify-center shrink-0">
+                          <div className="liquid-content w-14 h-14 rounded-xl bg-violet-900/40 border border-violet-500/20 flex flex-col items-center justify-center shrink-0">
                             <span className="text-[8px] font-bold text-violet-400 uppercase tracking-widest">{label}</span>
                             <span className="text-lg font-black text-white">{format(tgl, "HH:mm")}</span>
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="liquid-content flex-1 min-w-0">
                             <p className="font-bold text-white text-sm truncate group-hover:text-violet-300 transition-colors">{sesi.judul}</p>
                             <p className="text-[10px] text-slate-500 font-medium mt-0.5 truncate">{sesi.event?.nama}</p>
                             {sesi.lokasi && (
@@ -212,7 +212,7 @@ export default async function DashboardPage() {
                               </p>
                             )}
                           </div>
-                          <div className="shrink-0 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                          <div className="liquid-content shrink-0 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                             <Clock className="w-3.5 h-3.5 text-slate-600" />
                           </div>
                         </a>
@@ -237,7 +237,7 @@ export default async function DashboardPage() {
         <div className="space-y-6">
 
           {/* Pengumuman */}
-          <Card className="bg-[#171421] border-[#ffffff1a] rounded-[2rem] p-6 shadow-xl relative overflow-hidden">
+          <Card className="liquid-card liquid-glow-rose rounded-[2rem] p-6 relative overflow-hidden">
             <div className="absolute -bottom-10 -right-10 text-[#ffffff05] tracking-tighter text-8xl font-black pointer-events-none select-none z-0">
               INFO
             </div>
@@ -262,7 +262,7 @@ export default async function DashboardPage() {
           </Card>
 
           {/* Aktivitas Terkini — scrollable, 1 bulan */}
-          <Card className="bg-[#171421] border-[#ffffff1a] rounded-[2.5rem] p-6 shadow-xl">
+          <Card className="liquid-card liquid-glow-blue rounded-[2.5rem] p-6">
             <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-slate-400 mb-6">Aktivitas Terkini</h3>
 
             {/* Scrollable container */}

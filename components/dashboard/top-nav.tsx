@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { LogOut, Search, Menu, User2, ChevronDown } from "lucide-react"
+import { LogOut, Search, User2, ChevronDown } from "lucide-react"
 import { logoutAction } from "@/app/actions/auth"
 import Link from "next/link"
 
@@ -12,10 +12,9 @@ interface TopNavProps {
     image?: string | null;
     role?: string | null;
   } | null
-  onMenuClick?: () => void
 }
 
-export function TopNav({ user, onMenuClick }: TopNavProps) {
+export function TopNav({ user }: TopNavProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -33,21 +32,17 @@ export function TopNav({ user, onMenuClick }: TopNavProps) {
   const initials = user?.name?.charAt(0).toUpperCase() || "?"
 
   return (
-    <header className="h-16 px-4 md:px-6 border-b border-white/5 flex items-center justify-between bg-slate-950/20 backdrop-blur-xl sticky top-0 z-20">
+    <header className="liquid-glass h-16 shrink-0 pl-16 pr-4 md:mx-4 md:mt-4 md:px-5 flex items-center justify-between relative z-20 rounded-none md:rounded-2xl border-x-0 border-t-0 md:border">
       {/* Left: Mobile menu trigger + Search */}
       <div className="flex items-center gap-4 flex-1">
-        <button onClick={onMenuClick} className="lg:hidden p-2 text-slate-400 hover:text-white transition-colors">
-          <Menu className="h-5 w-5" />
-        </button>
-
         {/* Search bar */}
-        <form action="/dashboard/events" className="hidden md:flex items-center relative group">
+        <form action="/dashboard/events" className="hidden lg:flex items-center relative group">
           <Search className="h-4 w-4 absolute left-3 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
           <input
             type="text"
             name="q"
             placeholder="Cari event..."
-            className="bg-[#ffffff0a] border border-[#ffffff1a] hover:border-white/20 focus:border-violet-500/50 outline-none rounded-full pl-10 pr-4 py-2 text-sm text-white placeholder:text-slate-500 w-56 transition-all focus:w-72 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+            className="liquid-input hover:border-white/20 outline-none rounded-full pl-10 pr-4 py-2 text-sm text-white placeholder:text-slate-500 w-52 transition-all focus:w-64 xl:w-56 xl:focus:w-72"
           />
         </form>
       </div>
@@ -60,7 +55,7 @@ export function TopNav({ user, onMenuClick }: TopNavProps) {
         <div ref={dropdownRef} className="relative">
           <button
             onClick={() => setDropdownOpen(prev => !prev)}
-            className="flex items-center gap-3 hover:bg-white/5 px-3 py-1.5 rounded-full transition-colors group"
+            className="flex items-center gap-3 hover:bg-white/10 px-3 py-1.5 rounded-full transition-colors group"
           >
             {/* Name + role */}
             <div className="text-right hidden md:block">
@@ -69,7 +64,7 @@ export function TopNav({ user, onMenuClick }: TopNavProps) {
             </div>
 
             {/* Avatar */}
-            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-violet-500 to-blue-500 p-[2px] shrink-0">
+            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-violet-500 via-sky-400 to-emerald-400 p-[2px] shrink-0 shadow-[0_0_24px_rgba(124,58,237,0.18)]">
               <div className="h-full w-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center">
                 {user?.image ? (
                   <img src={user.image || undefined} alt={user.name || "User"} className="h-full w-full object-cover" />
@@ -84,7 +79,7 @@ export function TopNav({ user, onMenuClick }: TopNavProps) {
 
           {/* Dropdown panel */}
           {dropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-[#171421] border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="liquid-glass absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               {/* User info header */}
               <div className="px-5 py-4 border-b border-white/5">
                 <div className="flex items-center gap-3">

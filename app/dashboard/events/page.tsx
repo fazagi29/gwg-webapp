@@ -2,12 +2,13 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { CreateEventDialog } from "./create-dialog"
 import { EventsClient } from "./events-client"
+import { SearchX } from "lucide-react"
 
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const session = await auth()
   const isAdmin = session?.user?.role === "admin"
   const params = await searchParams
-  const q = params?.q || ""
+  const q = params?.q?.trim() || ""
 
   const allEvents: import('@prisma/client').Event[] = await prisma.event.findMany({
     where: q ? { nama: { contains: q } } : undefined,
@@ -36,6 +37,18 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
       {/* Admin: tombol tambah event */}
       {isAdmin && <CreateEventDialog />}
+
+      {q && allEvents.length === 0 && (
+        <div role="alert" className="flex items-start gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-amber-100">
+          <SearchX className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
+          <div>
+            <p className="font-bold">Hasil pencarian tidak ditemukan</p>
+            <p className="mt-1 text-sm text-amber-100/75">
+              Tidak ada event yang cocok dengan kata kunci “{q}”.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Client component: filter + grid */}
       <EventsClient events={allEvents} isAdmin={isAdmin} />

@@ -14,6 +14,7 @@ import {
   Music2,
   X,
   CheckCircle,
+  Search,
 } from "lucide-react"
 
 interface AppSidebarProps {
@@ -84,14 +85,16 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
     },
   ]
 
+  const searchHref = role === "admin" ? "/dashboard/events" : "/dashboard/anggota/events"
+
   return (
     <aside className={cn(
-      "w-64 max-w-[250px] border-r border-[#ffffff0a] bg-[#0c0c0e] flex flex-col h-screen fixed left-0 top-0 z-40 transition-transform duration-300",
+      "liquid-sidebar w-64 max-w-[250px] flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 lg:left-4 lg:top-4 lg:h-[calc(100vh-2rem)] lg:rounded-[1.75rem] lg:border",
       isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
     )}>
       <div className="p-6 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity" onClick={() => setIsOpen?.(false)}>
-          <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(124,58,237,0.4)]">
+          <div className="liquid-button w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
              <span className="font-bold text-white text-sm">GWG</span>
           </div>
           <div>
@@ -106,6 +109,18 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
         </button>
       </div>
 
+      <form action={searchHref} className="px-4 lg:hidden">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <input
+            type="text"
+            name="q"
+            placeholder={role === "admin" ? "Cari event..." : "Cari event aktif..."}
+            className="liquid-input h-10 w-full rounded-xl pl-10 pr-3 text-sm text-white outline-none transition-colors placeholder:text-slate-500"
+          />
+        </div>
+      </form>
+
       <div className="flex-1 px-4 mt-6 overflow-y-auto">
         <div className="space-y-1">
           {memberRoutes.filter((route) => route.show).map((route) => {
@@ -119,7 +134,7 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
                 href={route.href}
                 onClick={() => setIsOpen?.(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative",
+                  "liquid-nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative",
                   isActive
                     ? "text-white bg-[#ffffff0a] font-semibold"
                     : "text-slate-400 hover:text-white font-medium"
@@ -146,7 +161,7 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
                   href={route.href}
                   onClick={() => setIsOpen?.(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative",
+                  "liquid-nav-item flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative",
                     isActive
                       ? "text-white bg-[#ffffff0a] font-semibold"
                       : "text-slate-400 hover:text-white font-medium"
@@ -168,7 +183,7 @@ export function AppSidebar({ role, isOpen, setIsOpen }: AppSidebarProps) {
         <form action="/api/auth/signout" method="post">
           <button
             type="submit"
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-400 hover:text-red-400 transition-colors rounded-xl hover:bg-red-500/10"
+            className="liquid-nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-400 hover:text-red-400 transition-colors rounded-xl hover:bg-red-500/10"
           >
             <LogOut className="h-4 w-4" />
             <span className="text-xs font-semibold tracking-wider uppercase">Keluar</span>

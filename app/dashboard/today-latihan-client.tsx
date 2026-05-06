@@ -84,7 +84,7 @@ export function TodayLatihanClient({ sessions, activeEventsCount }: TodayLatihan
           </div>
 
           {sessions.length === 0 ? (
-            <div className="bg-[#171421] border border-dashed border-white/10 rounded-2xl p-12 flex items-center justify-center text-slate-500 text-sm">
+            <div className="liquid-card liquid-glow-blue border-dashed rounded-2xl p-12 flex items-center justify-center text-slate-500 text-sm">
               Tidak ada latihan untuk hari ini
             </div>
           ) : (
@@ -99,7 +99,7 @@ export function TodayLatihanClient({ sessions, activeEventsCount }: TodayLatihan
               {sessions.map((session) => (
                 <div
                   key={session.id}
-                  className="flex-shrink-0 w-96 bg-gradient-to-br from-violet-600/20 to-blue-600/20 border border-white/10 hover:border-violet-500/50 rounded-2xl p-6 transition-all group cursor-pointer"
+                  className="liquid-card liquid-glow-violet flex-shrink-0 w-96 rounded-2xl p-6 group cursor-pointer"
                 >
                   <div className="space-y-4">
                     {/* Header */}
@@ -157,7 +157,7 @@ export function TodayLatihanClient({ sessions, activeEventsCount }: TodayLatihan
         </div>
 
         {/* Active Events Count - 1 column */}
-        <Link href="/dashboard/anggota/events" className="bg-gradient-to-br from-emerald-600/30 to-teal-600/20 border border-emerald-500/30 rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-all hover:border-emerald-300/60 hover:bg-emerald-500/20">
+        <Link href="/dashboard/anggota/events" className="liquid-card liquid-tint-emerald liquid-glow-emerald rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-all hover:border-emerald-300/60">
           <div className="w-12 h-12 rounded-xl bg-emerald-600/40 border border-emerald-500/30 flex items-center justify-center mb-4">
             <BarChart3 className="w-6 h-6 text-emerald-300" />
           </div>
