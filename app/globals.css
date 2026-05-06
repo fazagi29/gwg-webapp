@@ -139,8 +139,8 @@
 
   .liquid-dashboard-bg::before {
     content: "";
-    position: absolute;
-    inset: -20%;
+    position: fixed;
+    inset: 0;
     pointer-events: none;
     background:
       conic-gradient(from 210deg at 42% 44%, transparent 0deg, rgba(91, 66, 190, 0.14) 72deg, transparent 140deg, rgba(22, 119, 130, 0.1) 220deg, transparent 360deg),

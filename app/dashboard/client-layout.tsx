@@ -24,10 +24,16 @@ export function DashboardClientLayout({
   const pathname = usePathname()
   const mainRef = useRef<HTMLElement>(null)
 
-  useEffect(() => {
-    mainRef.current?.scrollTo({ top: 0, left: 0 })
-    window.scrollTo({ top: 0, left: 0 })
-  }, [pathname])
+useEffect(() => {
+  if (mainRef.current) {
+    mainRef.current.scrollTop = 0
+  }
+  
+  const wrapper = document.getElementById("dashboard-wrapper")
+  if (wrapper) {
+    wrapper.scrollTop = 0
+  }
+}, [pathname])
 
   return (
     <>
@@ -57,7 +63,7 @@ export function DashboardClientLayout({
       )}
 
       {/* Main Content Space */}
-      <div className="flex-1 lg:ml-72 flex min-h-0 flex-col h-dvh overflow-hidden z-10 relative w-full">
+      <div className="flex-1 lg:ml-72 flex min-h-0 flex-col overflow-hidden z-10 relative w-full">
         <TopNav user={user} />
         
         <main ref={mainRef} className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 scroll-smooth w-full">
