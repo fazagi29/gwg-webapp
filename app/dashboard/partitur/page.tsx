@@ -12,7 +12,7 @@ export default async function PartiturPage() {
   })
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-4xl mx-auto pb-24">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-8xl mx-auto pb-24">
 
       {/* Header */}
       <div className="flex items-end justify-between border-b border-[#ffffff0a] pb-6">
